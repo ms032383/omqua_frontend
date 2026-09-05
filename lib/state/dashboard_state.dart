@@ -173,14 +173,187 @@ class DashboardStateController extends ChangeNotifier {
     "gemini-2.0-flash",
   ];
 
-  // Cases List - Clean fresh session with only New Chat
+  // Cases List
   final List<CaseModel> _cases = [
     CaseModel(
-      id: "NC-1001",
-      title: "New Chat",
-      timestamp: "Just now",
-      tags: "medgemma:4b",
-      messages: [],
+      id: "MN-9402",
+      title: "Meningioma protocol lookup",
+      timestamp: "2 hours ago",
+      tags: "T1-CE • T2-FLAIR",
+      messages: [
+        ChatMessage(
+          id: "MN-9402-u1",
+          sender: "user",
+          text: "Plan craniotomy based on dural tail attachment. Requesting validation on sagittal sinus patency. Margins to be kept strict.",
+          timestamp: DateTime.now().subtract(const Duration(hours: 2)),
+          citations: [],
+        ),
+        ChatMessage(
+          id: "MN-9402-a1",
+          sender: "assistant",
+          model: "llama3.2:1b",
+          text: "ANALYSIS COMPLETE: Deep cranial meningioma protocol initiated. Dural tail sign detected at right frontoparietal junction [1]. High probability of WHO Grade I benign meningioma. Recommended resection margin: 5mm beyond contrast-enhanced borders [2]. Double-check bilateral sagittal sinus patency [3] to minimize postoperative venous congestion risks.",
+          timestamp: DateTime.now().subtract(const Duration(hours: 2, minutes: 59)),
+          citations: [
+            {
+              "journal": "Neurosurgical Focus (Vol. 54, 2024)",
+              "authors": "Clinical Efficacy of Extensive Dural Resection in Grade I Meningiomas: A Multicenter Analysis",
+              "section": "Discussion",
+              "doi": "10.3171/2024.3.FOCUS24112",
+              "url": "https://thejns.org/focus/view/journals/neurosurg-focus/54/6/article-pE11.xml"
+            },
+            {
+              "journal": "Journal of Neurosurgery (Vol. 139, 2023)",
+              "authors": "Resection Margin Guidelines for WHO Grade I Meningiomas",
+              "section": "Results",
+              "doi": "10.3171/2023.1.JNS22194",
+              "url": "https://thejns.org/view/journals/j-neurosurg/139/2/article-p340.xml"
+            },
+            {
+              "journal": "World Neurosurgery (Vol. 177, 2023)",
+              "authors": "Venous Drainage Patterns and Sinus Patency in Cranial Base Surgery",
+              "section": "Clinical Anatomy",
+              "doi": "10.1016/j.wneu.2023.06.082",
+              "url": "https://pubmed.ncbi.nlm.nih.gov/37482910/"
+            }
+          ],
+        )
+      ],
+    ),
+    CaseModel(
+      id: "GL-1084",
+      title: "Glioma Margins Verification",
+      timestamp: "5 hours ago",
+      tags: "FLAIR • DTI • MRS",
+      messages: [
+        ChatMessage(
+          id: "GL-1084-u1",
+          sender: "user",
+          text: "Verify proximity to arcuate fasciculus. Awake monitoring requested for language function protection.",
+          timestamp: DateTime.now().subtract(const Duration(hours: 5)),
+          citations: [],
+        ),
+        ChatMessage(
+          id: "GL-1084-a1",
+          sender: "assistant",
+          model: "llama3.2:1b",
+          text: "DETECTION REPORT: Left temporal infiltrative glioma borders analyzed. High FLAIR signal envelope spans 4.2cm beyond primary contrast enhancement area [1]. Integrated DTI tractography demonstrates close proximity to speech and language tracts (arcuate fasciculus) [2]. Recommend intraoperative language mapping under awake anesthesia protocols [3].",
+          timestamp: DateTime.now().subtract(const Duration(hours: 5, minutes: 59)),
+          citations: [
+            {
+              "journal": "Journal of Neuro-Oncology (Vol. 167, 2025)",
+              "authors": "Diffusion Tensor Imaging vs Intraoperative Stimulation in Temporal Glioma Margins",
+              "section": "Discussion",
+              "doi": "10.1007/s11060-025-04561-2",
+              "url": "https://link.springer.com/article/10.1007/s11060-025-04561-2"
+            },
+            {
+              "journal": "Neurosurgery (Vol. 96, 2024)",
+              "authors": "Arcuate Fasciculus Protection in Eloquent Area Resections",
+              "section": "Methodology",
+              "doi": "10.1227/neu.0000000000002891",
+              "url": "https://journals.lww.com/neurosurgery/pages/default.aspx"
+            },
+            {
+              "journal": "Acta Neurochirurgica (Vol. 167, 2025)",
+              "authors": "Intraoperative Language Mapping Standards",
+              "section": "Guidelines",
+              "doi": "10.1007/s00701-025-06012-z",
+              "url": "https://link.springer.com/journal/701"
+            }
+          ],
+        )
+      ],
+    ),
+    CaseModel(
+      id: "AN-3392",
+      title: "Acoustic Neuroma Resection",
+      timestamp: "1 day ago",
+      tags: "FIESTA • CISS",
+      messages: [
+        ChatMessage(
+          id: "AN-3392-u1",
+          sender: "user",
+          text: "Subtotal resection is acceptable to protect facial nerve integrity. Monitor facial EMG continuously.",
+          timestamp: DateTime.now().subtract(const Duration(days: 1)),
+          citations: [],
+        ),
+        ChatMessage(
+          id: "AN-3392-a1",
+          sender: "assistant",
+          model: "llama3.2:1b",
+          text: "HUD PATHOLOGY UPDATE: Vestibular schwannoma occupying the internal auditory canal and extending into the cerebellopontine angle [1]. Crucial to preserve facial nerve function; check facial EMG responses. Recommend subtotal resection if adherence to the brainstem threatens vital structure integrity [2]. Reference standard guideline: Koos Grade III protocol [3].",
+          timestamp: DateTime.now().subtract(const Duration(days: 1, minutes: 59)),
+          citations: [
+            {
+              "journal": "Neurosurgery (Vol. 95, 2024)",
+              "authors": "Koos Grade III Acoustic Neuromas: Auditory Preservation and Facial Nerve Outcomes",
+              "section": "Results",
+              "doi": "10.1227/neu.0000000000002672",
+              "url": "https://journals.lww.com/neurosurgery/pages/default.aspx"
+            },
+            {
+              "journal": "Journal of Neurosurgery (Vol. 140, 2024)",
+              "authors": "Facial EMG Monitoring in Cerebellopontine Angle Surgery",
+              "section": "Clinical Studies",
+              "doi": "10.3171/2024.1.JNS23190",
+              "url": "https://thejns.org"
+            },
+            {
+              "journal": "Otology & Neurotology (Vol. 45, 2024)",
+              "authors": "Koos Grading System and Cranial Nerve Preservations",
+              "section": "Guidelines",
+              "doi": "10.1097/MAO.0000000000004121",
+              "url": "https://journals.lww.com/otology-neurotology"
+            }
+          ],
+        )
+      ],
+    ),
+    CaseModel(
+      id: "VD-8830",
+      title: "Vascular Decompression Protocol",
+      timestamp: "2 days ago",
+      tags: "3D-TOF • FIESTA",
+      messages: [
+        ChatMessage(
+          id: "VD-8830-u1",
+          sender: "user",
+          text: "Mobilize superior cerebellar artery. Prepare Teflon felt block. Inspect root entry zone for secondary venous compression.",
+          timestamp: DateTime.now().subtract(const Duration(days: 2)),
+          citations: [],
+        ),
+        ChatMessage(
+          id: "VD-8830-a1",
+          sender: "assistant",
+          model: "llama3.2:1b",
+          text: "VASCULAR ANALYSIS: Trigeminal nerve (CN V) compression observed at the root entry zone by the superior cerebellar artery loop [1]. Decompression protocol recommends Teflon felt placement [2]. Double-check for secondary compression loops from adjacent veins before completing the decompression [3].",
+          timestamp: DateTime.now().subtract(const Duration(days: 2, minutes: 59)),
+          citations: [
+            {
+              "journal": "Acta Neurochirurgica (Vol. 166, 2023)",
+              "authors": "Microvascular Decompression in Trigeminal Neuralgia: Long-term Relief and Venous Compression Factors",
+              "section": "Discussion",
+              "doi": "10.1007/s00701-023-05712-4",
+              "url": "https://link.springer.com/journal/701"
+            },
+            {
+              "journal": "Journal of Neurosurgery (Vol. 138, 2023)",
+              "authors": "Teflon Felt Interposition Techniques in MVD",
+              "section": "Operative Nuances",
+              "doi": "10.3171/2023.2.JNS22894",
+              "url": "https://thejns.org"
+            },
+            {
+              "journal": "Neurosurgical Review (Vol. 46, 2023)",
+              "authors": "Secondary Venous Compression in Trigeminal Neuralgia",
+              "section": "Clinical Case Series",
+              "doi": "10.1007/s10143-023-02011-8",
+              "url": "https://link.springer.com/journal/10143"
+            }
+          ],
+        )
+      ],
     ),
   ];
 

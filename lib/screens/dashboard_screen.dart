@@ -474,9 +474,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               _buildModelSelector(),
               const SizedBox(width: 8),
               IconButton(
-                icon: const Icon(Icons.add, color: CyberTheme.textGray, size: 18),
-                onPressed: () {},
-                tooltip: "Add models",
+                icon: const Icon(Icons.cloud_sync_outlined, color: CyberTheme.textGray, size: 18),
+                onPressed: () => _showBackendConfigDialog(),
+                tooltip: "Configure Backend Endpoint (${_controller.backendBaseUrl})",
               ),
             ],
           ),
@@ -579,6 +579,82 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           );
         }).toList();
+      },
+    );
+  }
+
+  void _showBackendConfigDialog() {
+    final textController = TextEditingController(text: _controller.backendBaseUrl);
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: CyberTheme.cardBg,
+          shape: RoundedRectangleBorder(
+            borderRadius: CyberTheme.softBorderRadius,
+            side: const BorderSide(color: CyberTheme.borderBright),
+          ),
+          title: Row(
+            children: const [
+              Icon(Icons.dns, color: CyberTheme.accent, size: 20),
+              SizedBox(width: 10),
+              Text(
+                "Backend API Endpoint",
+                style: TextStyle(color: CyberTheme.textWhite, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Set FastAPI backend endpoint. Use localhost for local dev or paste Cloudflare Tunnel HTTPS URL when connecting to Google Cloud VM:",
+                style: TextStyle(color: CyberTheme.textGray, fontSize: 12),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: textController,
+                style: const TextStyle(color: CyberTheme.textWhite, fontSize: 13),
+                decoration: InputDecoration(
+                  hintText: "https://your-tunnel.trycloudflare.com",
+                  hintStyle: const TextStyle(color: CyberTheme.textGray, fontSize: 12),
+                  filled: true,
+                  fillColor: CyberTheme.background,
+                  border: OutlineInputBorder(
+                    borderRadius: CyberTheme.softBorderRadius,
+                    borderSide: const BorderSide(color: CyberTheme.borderMuted),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: CyberTheme.softBorderRadius,
+                    borderSide: const BorderSide(color: CyberTheme.accent),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                textController.text = "http://localhost:8000";
+              },
+              child: const Text("Reset Localhost", style: TextStyle(color: CyberTheme.textGray, fontSize: 12)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: CyberTheme.accent,
+                foregroundColor: Colors.black,
+              ),
+              onPressed: () {
+                if (textController.text.trim().isNotEmpty) {
+                  _controller.setBackendBaseUrl(textController.text.trim());
+                }
+                Navigator.of(ctx).pop();
+              },
+              child: const Text("Save URL"),
+            ),
+          ],
+        );
       },
     );
   }

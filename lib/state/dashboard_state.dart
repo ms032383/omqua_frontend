@@ -96,6 +96,21 @@ class DashboardStateController extends ChangeNotifier {
   String _selectedModel = "llama3.2:1b";
   String get selectedModel => _selectedModel;
 
+  // Configurable Backend Server Base URL
+  String _backendBaseUrl = "http://localhost:8000";
+  String get backendBaseUrl => _backendBaseUrl;
+
+  void setBackendBaseUrl(String url) {
+    String cleanUrl = url.trim();
+    while (cleanUrl.endsWith("/")) {
+      cleanUrl = cleanUrl.substring(0, cleanUrl.length - 1);
+    }
+    if (cleanUrl.isNotEmpty) {
+      _backendBaseUrl = cleanUrl;
+      notifyListeners();
+    }
+  }
+
   // Attached Image state for vision model (medgemma:4b)
   String? _attachedImageBase64;
   String? _attachedImageName;
@@ -504,7 +519,7 @@ class DashboardStateController extends ChangeNotifier {
       }
 
       final response = await http.post(
-        Uri.parse("http://localhost:8000/query"),
+        Uri.parse("$_backendBaseUrl/query"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(requestBody),
       ).timeout(const Duration(seconds: 300));

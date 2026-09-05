@@ -73,6 +73,20 @@ class CaseModel {
   }
 }
 
+class AttachedImage {
+  final String id;
+  final String name;
+  final String base64;
+  final int sizeBytes;
+
+  AttachedImage({
+    required this.id,
+    required this.name,
+    required this.base64,
+    this.sizeBytes = 0,
+  });
+}
+
 class DashboardStateController extends ChangeNotifier {
   // Sidebar Collapsed State
   bool _isSidebarCollapsed = false;
@@ -111,24 +125,36 @@ class DashboardStateController extends ChangeNotifier {
     }
   }
 
-  // Attached Image state for vision model (medgemma:4b)
-  String? _attachedImageBase64;
-  String? _attachedImageName;
-  
-  String? get attachedImageName => _attachedImageName;
-  String? get attachedImageBase64 => _attachedImageBase64;
-  
-  void attachImage(String base64, String name) {
-    _attachedImageBase64 = base64;
-    _attachedImageName = name;
+  // Multi-Image Attachments (Supports single or multiple images for MedGemma / Vision)
+  final List<AttachedImage> _attachedImages = [];
+  List<AttachedImage> get attachedImages => List.unmodifiable(_attachedImages);
+
+  void addAttachedImage(String base64, String name, [int sizeBytes = 0]) {
+    _attachedImages.add(AttachedImage(
+      id: "${DateTime.now().microsecondsSinceEpoch}_${_attachedImages.length}",
+      name: name,
+      base64: base64,
+      sizeBytes: sizeBytes,
+    ));
     notifyListeners();
   }
-  
-  void clearAttachment() {
-    _attachedImageBase64 = null;
-    _attachedImageName = null;
+
+  void removeAttachedImage(String id) {
+    _attachedImages.removeWhere((img) => img.id == id);
     notifyListeners();
   }
+
+  void clearAttachedImages() {
+    _attachedImages.clear();
+    notifyListeners();
+  }
+
+  // Backwards compatibility getters
+  String? get attachedImageName => _attachedImages.isNotEmpty ? _attachedImages.first.name : null;
+  String? get attachedImageBase64 => _attachedImages.isNotEmpty ? _attachedImages.first.base64 : null;
+  void attachImage(String base64, String name) => addAttachedImage(base64, name);
+  void clearAttachment() => clearAttachedImages();
+
 
   void selectModel(String model) {
     _selectedModel = model;
@@ -502,10 +528,9 @@ class DashboardStateController extends ChangeNotifier {
     );
     _selectedCase.messages.add(assistantMsg);
     
-    // Capture and clear attached image before making HTTP call
-    final activeImage = _attachedImageBase64;
-    _attachedImageBase64 = null;
-    _attachedImageName = null;
+    // Capture and clear attached images before making HTTP call
+    final List<String> activeImages = _attachedImages.map((e) => e.base64).toList();
+    _attachedImages.clear();
     notifyListeners();
 
     try {
@@ -514,8 +539,8 @@ class DashboardStateController extends ChangeNotifier {
         "model": _selectedModel,
         "history": history,
       };
-      if (activeImage != null) {
-        requestBody["images"] = [activeImage];
+      if (activeImages.isNotEmpty) {
+        requestBody["images"] = activeImages;
       }
 
       final response = await http.post(

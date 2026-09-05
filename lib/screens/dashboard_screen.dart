@@ -1058,27 +1058,85 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (_controller.attachedImageName != null)
+              if (_controller.attachedImages.isNotEmpty)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
                   decoration: const BoxDecoration(
                     border: Border(bottom: BorderSide(color: CyberTheme.borderMuted, width: 1.0)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.attach_file, color: CyberTheme.accent, size: 16),
+                      const Icon(Icons.collections_outlined, color: CyberTheme.accent, size: 16),
                       const SizedBox(width: 8),
                       Text(
-                        _controller.attachedImageName!,
-                        style: const TextStyle(color: CyberTheme.textWhite, fontSize: 12, fontWeight: FontWeight.bold),
+                        "${_controller.attachedImages.length} image${_controller.attachedImages.length > 1 ? 's' : ''} attached",
+                        style: const TextStyle(color: CyberTheme.textGray, fontSize: 11, fontWeight: FontWeight.w600),
                       ),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.close, color: CyberTheme.textGray, size: 14),
-                        onPressed: () => _controller.clearAttachment(),
-                        constraints: const BoxConstraints(),
-                        padding: EdgeInsets.zero,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: _controller.attachedImages.map((img) {
+                              return Container(
+                                margin: const EdgeInsets.only(right: 8.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                                decoration: BoxDecoration(
+                                  color: CyberTheme.background,
+                                  borderRadius: BorderRadius.circular(6.0),
+                                  border: Border.all(color: CyberTheme.borderBright, width: 0.8),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(4.0),
+                                      child: Image.memory(
+                                        base64Decode(img.base64),
+                                        width: 20,
+                                        height: 20,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => const Icon(Icons.image, size: 16, color: CyberTheme.accent),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    ConstrainedBox(
+                                      constraints: const BoxConstraints(maxWidth: 130),
+                                      child: Text(
+                                        img.name,
+                                        style: const TextStyle(color: CyberTheme.textWhite, fontSize: 11, fontWeight: FontWeight.w500),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    InkWell(
+                                      onTap: () => _controller.removeAttachedImage(img.id),
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(2.0),
+                                        child: Icon(Icons.close, color: CyberTheme.textGray, size: 13),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
                       ),
+                      if (_controller.attachedImages.length > 1)
+                        TextButton(
+                          onPressed: () => _controller.clearAttachedImages(),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: const Text(
+                            "Clear all",
+                            style: TextStyle(color: CyberTheme.textGray, fontSize: 11),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -1241,16 +1299,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   try {
                     FilePickerResult? result = await FilePicker.pickFiles(
                       type: FileType.custom,
-                      allowedExtensions: ['png', 'jpg', 'jpeg', 'dcm', 'dicom'],
+                      allowedExtensions: ['png', 'jpg', 'jpeg', 'dcm', 'dicom', 'webp'],
+                      allowMultiple: true,
                       withData: true,
                     );
-                    if (result != null) {
-                      final file = result.files.single;
-                      if (file.bytes != null) {
-                        String base64String = base64Encode(file.bytes!);
-                        _controller.attachImage(base64String, file.name);
-                      } else {
-                        throw Exception("File data could not be read.");
+                    if (result != null && result.files.isNotEmpty) {
+                      for (final file in result.files) {
+                        if (file.bytes != null) {
+                          String base64String = base64Encode(file.bytes!);
+                          _controller.addAttachedImage(base64String, file.name, file.size);
+                        }
                       }
                     }
                   } catch (e) {
